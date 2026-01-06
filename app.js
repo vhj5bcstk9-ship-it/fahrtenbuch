@@ -29,22 +29,33 @@ function render() {
   const body = document.getElementById("tableBody");
   body.innerHTML = "";
   trips.filter(t => new Date(t.date).getFullYear() === year)
-       .forEach(t => {
+       .forEach((t, i) => {
     const km = t.end - t.start;
     body.innerHTML += `<tr>
       <td>${new Date(t.date).toLocaleDateString("de-DE")}</td>
       <td>${t.plate}</td><td>${t.start}</td><td>${t.end}</td>
       <td>${km}</td><td>${t.plz}</td>
+      <td><button onclick="deleteTrip(${i})">Löschen</button></td>
     </tr>`;
   });
+}
+
+function deleteTrip(index) {
+  if (confirm("Diesen Eintrag wirklich löschen?")) {
+    trips.splice(index, 1);
+    localStorage.setItem("trips", JSON.stringify(trips));
+    updateYearFilter();
+    render();
+  }
 }
 
 function createPDF() {
   const year = Number(document.getElementById("yearFilter").value);
   const data = trips.filter(t => new Date(t.date).getFullYear() === year);
+  if (data.length === 0) { alert("Keine Daten für dieses Jahr."); return; }
+
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: "landscape" });
-
   doc.setFontSize(14);
   doc.text(`Fahrtenbuch ${year}`, 10, 10);
 
@@ -65,5 +76,6 @@ function createPDF() {
 
   doc.save(`Fahrtenbuch_${year}.pdf`);
 }
+
 updateYearFilter();
 render();
