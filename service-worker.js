@@ -1,5 +1,6 @@
-const cacheName = "fahrtenbuch-cache-v1";
-const assets = [
+const CACHE = "fahrtenbuch-v1";
+const FILES = [
+  "./",
   "./index.html",
   "./app.js",
   "./manifest.json",
@@ -8,14 +9,14 @@ const assets = [
   "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
 ];
 
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(cacheName).then(cache => cache.addAll(assets))
+self.addEventListener("install", e => {
+  e.waitUntil(
+    caches.open(CACHE).then(cache => cache.addAll(FILES))
   );
 });
 
-self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request).then(resp => resp || fetch(event.request))
+self.addEventListener("fetch", e => {
+  e.respondWith(
+    caches.match(e.request).then(r => r || fetch(e.request))
   );
 });
